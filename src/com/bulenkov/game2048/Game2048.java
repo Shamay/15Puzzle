@@ -42,22 +42,16 @@ public class Game2048 extends JPanel {
     int myTime = 300;
 
   public Game2048() {
+  	
     setFocusable(true);
+    
     addKeyListener(new KeyAdapter() {
+      
       @Override
       public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           resetGame();
         }
-
-	final Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                myTime--;
-                if (myTime < 1)
-                    myLose = true;
-            }
-        }, 0, 1000);
 
         if (!myWin && !myLose) {
           switch (e.getKeyCode()) {
@@ -87,16 +81,20 @@ public class Game2048 extends JPanel {
         repaint();
       }
 
-	    @Override
-		public void actionPerformed(ActionEvent e) {
-		lable.setText(""+ (counter++));
-
-		if (counter == 10)
-		    t.removeActionListener(this);
-		
-	    }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		final Timer timer = new Timer();
+        	timer.scheduleAtFixedRate(new TimerTask() {
+            	public void run() {
+                	myTime--;
+                	if (myTime < 1)
+                	myLose = true;
+            	}
+        	}, 0, 1000);
+	}
+	
 	});
-    resetGame();
+        resetGame();
   }
 
     public Game2048(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
