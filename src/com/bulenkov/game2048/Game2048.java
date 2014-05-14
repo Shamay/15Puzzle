@@ -33,10 +33,11 @@ public class Game2048 extends JPanel {
   private static final int TILE_SIZE = 64;
   private static final int TILES_MARGIN = 16;
 
-  private Tile[] myTiles;
-  boolean myWin = false;
-  boolean myLose = false;
-  int myScore = 0;
+    private Tile[] myTiles;
+    private int nullTileIndex;
+    boolean myWin = false;
+    boolean myLose = false;
+    int myTime = 300;
 
   public Game2048() {
     setFocusable(true);
@@ -45,9 +46,6 @@ public class Game2048 extends JPanel {
       public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           resetGame();
-        }
-        if (!canMove()) {
-          myLose = true;
         }
 
         if (!myWin && !myLose) {
@@ -67,9 +65,13 @@ public class Game2048 extends JPanel {
           }
         }
 
-        if (!myWin && !canMove()) {
+	if (!myWin && myTime < 1) {
           myLose = true;
         }
+	
+	if(checkWin()){
+	    myWin = true;
+	}
 
         repaint();
       }
@@ -77,172 +79,145 @@ public class Game2048 extends JPanel {
     resetGame();
   }
 
+    public Game2048(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
+	setFocusable(true);
+	addKeyListener(new KeyAdapter() {
+		@Override
+		public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			resetGame();
+		    }
+		    
+		    if (!myWin && !myLose) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_LEFT:
+			    left();
+			    break;
+			case KeyEvent.VK_RIGHT:
+			    right();
+			    break;
+			case KeyEvent.VK_DOWN:
+			    down();
+			    break;
+			case KeyEvent.VK_UP:
+			    up();
+			    break;
+			}
+		    }
+
+		    if (!myWin && myTime < 1) {
+			myLose = true;
+		    }
+		    
+		    if(checkWin()){
+			myWin = true;
+		    }
+		    
+		    repaint();
+		}
+	    });
+	resetGame(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q);
+	
+    }
+    
+    public boolean checkWin(){
+	for(int x = 0; x < myTiles.length - 1; x++){
+	    if(myTiles[x].getValue() != x + 1)
+		return false;
+	}
+	return myTiles[myTiles.length - 1].getValue() == 0;
+    }
+
   public void resetGame() {
-    myScore = 0;
+    myTime = 300;
     myWin = false;
     myLose = false;
     myTiles = new Tile[4 * 4];
     for (int i = 0; i < myTiles.length; i++) {
-      myTiles[i] = new Tile();
+	myTiles[i] = new Tile(i);
     }
-    addTile();
-    addTile();
+    nullTileIndex = 0;
   }
 
-  public void left() {
-    boolean needAddTile = false;
-    for (int i = 0; i < 4; i++) {
-      Tile[] line = getLine(i);
-      Tile[] merged = mergeLine(moveLine(line));
-      setLine(i, merged);
-      if (!needAddTile && !compare(line, merged)) {
-        needAddTile = true;
-      }
+    public void resetGame(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
+	myTime = 300;
+	myWin = false;
+	myLose = false;
+	myTiles = new Tile[4 * 4];
+	myTiles[0] = new Tile(a);
+	myTiles[1] = new Tile(b);
+	myTiles[2] = new Tile(c);
+	myTiles[3] = new Tile (d);
+	myTiles[4] = new Tile (e);
+	myTiles[5] = new Tile (f);
+	myTiles[6] = new Tile (g);
+	myTiles[7] = new Tile (h);
+	myTiles[8] = new Tile (i);
+	myTiles[9] = new Tile (j);
+	myTiles[10] = new Tile (k);
+	myTiles[11] = new Tile (l);
+	myTiles[12] = new Tile (m);
+	myTiles[13] = new Tile (n);
+	myTiles[14] = new Tile (o);
+	myTiles[15] = new Tile (p);
+	nullTileIndex = q;
     }
 
-    if (needAddTile) {
-      addTile();
+    public int getNullTile(){
+	return nullTileIndex;
     }
+    public void setNullTile(int x){
+	nullTileIndex = x;
+    }
+
+  public void left() {
+    int index = getNullTile();
+    if(index % 4 < 3){
+	Tile temp = myTiles[index];
+	myTiles[index] = myTiles[index + 1];
+	myTiles[index + 1] = temp;
+	setNullTile(index + 1);
+    }
+    myTime--;
   }
 
   public void right() {
-    myTiles = rotate(180);
-    left();
-    myTiles = rotate(180);
-  }
-
-  public void up() {
-    myTiles = rotate(270);
-    left();
-    myTiles = rotate(90);
+      int index = getNullTile();
+      if(index % 4 > 0){
+	  Tile temp = myTiles[index];
+	  myTiles[index] = myTiles[index - 1];
+	  myTiles[index - 1] = temp;
+	  setNullTile(index - 1);
+      }
+      myTime--;
   }
 
   public void down() {
-    myTiles = rotate(90);
-    left();
-    myTiles = rotate(270);
+      int index = getNullTile();
+      if(index > 3){
+	  Tile temp = myTiles[index];
+	  myTiles[index] = myTiles[index - 4];
+	  myTiles[index - 4] = temp;
+	  setNullTile(index - 4);
+      }
+      myTime--;
+  }
+
+  public void up() {
+     int index = getNullTile();
+      if(index < 12){
+	  Tile temp = myTiles[index];
+	  myTiles[index] = myTiles[index + 4];
+	  myTiles[index + 4] = temp;
+	  setNullTile(index + 4);
+      }
+      myTime--;
   }
 
   private Tile tileAt(int x, int y) {
     return myTiles[x + y * 4];
   }
 
-  private void addTile() {
-    List<Tile> list = availableSpace();
-    if (!availableSpace().isEmpty()) {
-      int index = (int) (Math.random() * list.size()) % list.size();
-      Tile emptyTime = list.get(index);
-      emptyTime.value = Math.random() < 0.9 ? 2 : 4;
-    }
-  }
-
-  private List<Tile> availableSpace() {
-    final List<Tile> list = new ArrayList<Tile>(16);
-    for (Tile t : myTiles) {
-      if (t.isEmpty()) {
-        list.add(t);
-      }
-    }
-    return list;
-  }
-
-  private boolean isFull() {
-    return availableSpace().size() == 0;
-  }
-
-  boolean canMove() {
-    if (!isFull()) {
-      return true;
-    }
-    for (int x = 0; x < 4; x++) {
-      for (int y = 0; y < 4; y++) {
-        Tile t = tileAt(x, y);
-        if ((x < 3 && t.value == tileAt(x + 1, y).value)
-          || ((y < 3) && t.value == tileAt(x, y + 1).value)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean compare(Tile[] line1, Tile[] line2) {
-    if (line1 == line2) {
-      return true;
-    } else if (line1.length != line2.length) {
-      return false;
-    }
-
-    for (int i = 0; i < line1.length; i++) {
-      if (line1[i].value != line2[i].value) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private Tile[] rotate(int angle) {
-    Tile[] newTiles = new Tile[4 * 4];
-    int offsetX = 3, offsetY = 3;
-    if (angle == 90) {
-      offsetY = 0;
-    } else if (angle == 270) {
-      offsetX = 0;
-    }
-
-    double rad = Math.toRadians(angle);
-    int cos = (int) Math.cos(rad);
-    int sin = (int) Math.sin(rad);
-    for (int x = 0; x < 4; x++) {
-      for (int y = 0; y < 4; y++) {
-        int newX = (x * cos) - (y * sin) + offsetX;
-        int newY = (x * sin) + (y * cos) + offsetY;
-        newTiles[(newX) + (newY) * 4] = tileAt(x, y);
-      }
-    }
-    return newTiles;
-  }
-
-  private Tile[] moveLine(Tile[] oldLine) {
-    LinkedList<Tile> l = new LinkedList<Tile>();
-    for (int i = 0; i < 4; i++) {
-      if (!oldLine[i].isEmpty())
-        l.addLast(oldLine[i]);
-    }
-    if (l.size() == 0) {
-      return oldLine;
-    } else {
-      Tile[] newLine = new Tile[4];
-      ensureSize(l, 4);
-      for (int i = 0; i < 4; i++) {
-        newLine[i] = l.removeFirst();
-      }
-      return newLine;
-    }
-  }
-
-  private Tile[] mergeLine(Tile[] oldLine) {
-    LinkedList<Tile> list = new LinkedList<Tile>();
-    for (int i = 0; i < 4 && !oldLine[i].isEmpty(); i++) {
-      int num = oldLine[i].value;
-      if (i < 3 && oldLine[i].value == oldLine[i + 1].value) {
-        num *= 2;
-        myScore += num;
-        int ourTarget = 2048;
-        if (num == ourTarget) {
-          myWin = true;
-        }
-        i++;
-      }
-      list.add(new Tile(num));
-    }
-    if (list.size() == 0) {
-      return oldLine;
-    } else {
-      ensureSize(list, 4);
-      return list.toArray(new Tile[4]);
-    }
-  }
 
   private static void ensureSize(java.util.List<Tile> l, int s) {
     while (l.size() != s) {
@@ -250,17 +225,6 @@ public class Game2048 extends JPanel {
     }
   }
 
-  private Tile[] getLine(int index) {
-    Tile[] result = new Tile[4];
-    for (int i = 0; i < 4; i++) {
-      result[i] = tileAt(i, index);
-    }
-    return result;
-  }
-
-  private void setLine(int index, Tile[] re) {
-    System.arraycopy(re, 0, myTiles, index * 4, 4);
-  }
 
   @Override
   public void paint(Graphics g) {
@@ -303,11 +267,11 @@ public class Game2048 extends JPanel {
       g.setColor(new Color(78, 139, 202));
       g.setFont(new Font(FONT_NAME, Font.BOLD, 48));
       if (myWin) {
-        g.drawString("You won!", 68, 150);
+        g.drawString("Task Success!", 68, 150);
       }
       if (myLose) {
-        g.drawString("Game over!", 50, 130);
-        g.drawString("You lose!", 64, 200);
+        g.drawString("Out of moves!", 50, 130);
+        g.drawString("Task Failure!", 64, 200);
       }
       if (myWin || myLose) {
         g.setFont(new Font(FONT_NAME, Font.PLAIN, 16));
@@ -316,7 +280,7 @@ public class Game2048 extends JPanel {
       }
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
-    g.drawString("Score: " + myScore, 200, 365);
+    g.drawString("Moves Left: " + myTime, 200, 365);
 
   }
 
@@ -335,6 +299,10 @@ public class Game2048 extends JPanel {
       value = num;
     }
 
+      public int getValue(){
+	  return value;
+      }
+
     public boolean isEmpty() {
       return value == 0;
     }
@@ -345,17 +313,21 @@ public class Game2048 extends JPanel {
 
     public Color getBackground() {
       switch (value) {
-        case 2:    return new Color(0xeee4da);
-        case 4:    return new Color(0xede0c8);
-        case 8:    return new Color(0xf2b179);
-        case 16:   return new Color(0xf59563);
-        case 32:   return new Color(0xf67c5f);
-        case 64:   return new Color(0xf65e3b);
-        case 128:  return new Color(0xedcf72);
-        case 256:  return new Color(0xedcc61);
-        case 512:  return new Color(0xedc850);
-        case 1024: return new Color(0xedc53f);
-        case 2048: return new Color(0xedc22e);
+      case 1:    return new Color(0xeee4da);
+      case 2:    return new Color(0xede0c8);
+      case 3:    return new Color(0xf2b179);
+      case 4:   return new Color(0xf59563);
+      case 5:   return new Color(0xf67c5f);
+      case 6:   return new Color(0xf65e3b);
+      case 7:  return new Color(0xedcf72);
+      case 8:  return new Color(0xedcc61);
+      case 9:  return new Color(0xedc850);
+      case 10: return new Color(0xedc53f);
+      case 11: return new Color(0xedc22e);
+      case 12: return new Color(0xfec04c);
+      case 13: return new Color(0x4c8bff);
+      case 14: return new Color(0xffa500);
+      case 15: return new Color(0x3cff00);
       }
       return new Color(0xcdc1b4);
     }
@@ -368,7 +340,7 @@ public class Game2048 extends JPanel {
     game.setSize(340, 400);
     game.setResizable(false);
 
-    game.add(new Game2048());
+    game.add(new Game2048(1,2,3,4,5,6,7,8,9,10,11,12,13,14,0,15,14));
 
     game.setLocationRelativeTo(null);
     game.setVisible(true);
