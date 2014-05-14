@@ -23,6 +23,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Konstantin Bulenkov
@@ -47,6 +49,15 @@ public class Game2048 extends JPanel {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           resetGame();
         }
+
+	final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                myTime--;
+                if (myTime < 1)
+                    myLose = true;
+            }
+        }, 0, 1000);
 
         if (!myWin && !myLose) {
           switch (e.getKeyCode()) {
@@ -75,7 +86,16 @@ public class Game2048 extends JPanel {
 
         repaint();
       }
-    });
+
+	    @Override
+		public void actionPerformed(ActionEvent e) {
+		lable.setText(""+ (counter++));
+
+		if (counter == 10)
+		    t.removeActionListener(this);
+		
+	    }
+	});
     resetGame();
   }
 
