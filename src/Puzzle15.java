@@ -17,11 +17,13 @@
 //package com.bulenkov.game2048;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 
 
@@ -29,73 +31,33 @@ import java.awt.event.ActionEvent;
  * @author Konstantin Bulenkov
  */
 public class Puzzle15 extends JPanel{
-    private static final Color BG_COLOR = new Color(0xbbada0);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final Color BG_COLOR = new Color(0xbbada0);
     private static final String FONT_NAME = "Arial";
     private static final int TILE_SIZE = 64;
     private static final int TILES_MARGIN = 16;
     private static final int TIME = 300;
     private static final int MOVES = 300;
-
+    private static final int gameMode = (int) (Math.random() * 2) + 1; //gameMode 1 is timed. gameMode 2 is not
+    
     private Tile[] myTiles;
     private int nullTileIndex;
     private boolean myWin = false;
     private boolean myLose = false;
-    private int gameMode; //gameMode 1 is timed. gameMode 2 is not
     private int myMoves = TIME;
     private int myTime = MOVES;
 
-  public Puzzle15(int gameMode) {
-      this.gameMode = gameMode;
-      setFocusable(true);
-      addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyPressed(KeyEvent e) {
-        
-	  if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-	      resetGame(2);
-	  }
-
-	  if (!myWin && !myLose) {
-	      switch (e.getKeyCode()) {
-	      case KeyEvent.VK_LEFT:
-		  left();
-		  break;
-	      case KeyEvent.VK_RIGHT:
-		  right();
-		  break;
-	      case KeyEvent.VK_DOWN:
-		  down();
-		  break;
-	      case KeyEvent.VK_UP:
-		  up();
-		  break;
-	      }
-	  }
-
-	  if (!myWin && (myTime < 1 || myMoves < 1)) {
-	      myLose = true;
-	  }
-
-   
-	  if(checkWin()){
-	      myWin = true;
-	  }
-
-	  repaint();
-      }
-	
-	});
-      resetGame(gameMode);
-  }
-
-    public Puzzle15(int gameMode, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
-	this.gameMode = gameMode;
+    public Puzzle15(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
 	setFocusable(true);
 	addKeyListener(new KeyAdapter() {
 		@Override
 		public void keyPressed(KeyEvent e) {
 		    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			resetGame(2);
+		    ArrayList<Integer> par = randomInts();
+		    resetGame(par.get(0),par.get(1),par.get(2),par.get(3),par.get(4),par.get(5),par.get(6),par.get(7),par.get(8),par.get(9),par.get(10),par.get(11),par.get(12),par.get(13),par.get(14),par.get(15),par.get(16));
 		    }
 		    
 		    if (!myWin && !myLose) {
@@ -126,49 +88,26 @@ public class Puzzle15 extends JPanel{
 		    repaint();
 		}
 	    });
-
-	resetGame(gameMode,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q);	
+	
+		// Timer
+		if(gameMode == 1){
+			ActionListener taskPerformer = new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					if((!myWin && !myLose) && myTime > 0)
+							myTime--;
+					else if(!myWin)
+							myLose=true;
+					repaint();
+				}
+			};
+			new Timer(1000, taskPerformer).start();
+		}
+	resetGame(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q);	
     }
 
-    public void resetGame(int gameMode) {
+    public void resetGame(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
 	if(gameMode == 1){
 	    myTime = TIME;
-	    ActionListener taskPerformer = new ActionListener() {
-		    public void actionPerformed(ActionEvent evt) {
-			if((!myWin && !myLose) && myTime > 0)
-			    myTime--;
-			else if(!myWin)
-			    myLose=true;
-			repaint();
-		    }
-		};
-	    new Timer(1000, taskPerformer).start();
-	}else if(gameMode == 2){
-	    myMoves = MOVES;
-	}
-	myWin = false;
-	myLose = false;
-	myTiles = new Tile[4 * 4];
-	for (int i = 0; i < myTiles.length; i++) {
-	    myTiles[i] = new Tile(i);
-	}
-	nullTileIndex = 0;
-	repaint();
-    }
-
-    public void resetGame(int gameMode, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
-	if(gameMode == 1){
-	    myTime = TIME;
-	    ActionListener taskPerformer = new ActionListener() {
-		    public void actionPerformed(ActionEvent evt) {
-			if((!myWin && !myLose) && myTime > 0)
-			    myTime--;
-			else if(!myWin)
-			    myLose=true;
-			repaint();
-		    }
-		};
-	    new Timer(1000, taskPerformer).start();
 	}else if(gameMode == 2){
 	    myMoves = MOVES;
 	}
@@ -209,8 +148,9 @@ public class Puzzle15 extends JPanel{
 	    myTiles[nullTileIndex] = myTiles[nullTileIndex + 1];
 	    myTiles[nullTileIndex + 1] = temp;
 	    nullTileIndex++;
+	    myMoves--;
 	}
-	myMoves--;
+	
     }
 
     public void right() {
@@ -219,8 +159,9 @@ public class Puzzle15 extends JPanel{
 	  myTiles[nullTileIndex] = myTiles[nullTileIndex - 1];
 	  myTiles[nullTileIndex - 1] = temp;
 	  nullTileIndex--;
-      }
-      myMoves--;
+	  myMoves--;
+	}
+      
 
   }
 
@@ -230,8 +171,9 @@ public class Puzzle15 extends JPanel{
 	  myTiles[nullTileIndex] = myTiles[nullTileIndex - 4];
 	  myTiles[nullTileIndex - 4] = temp;
 	  nullTileIndex -= 4;
+	  myMoves--;
       }
-      myMoves--;
+      
 
   }
 
@@ -241,8 +183,8 @@ public class Puzzle15 extends JPanel{
 	  myTiles[nullTileIndex] = myTiles[nullTileIndex + 4];
 	  myTiles[nullTileIndex + 4] = temp;
 	  nullTileIndex+= 4;
+	  myMoves--;
       }
-      myMoves--;
 
   }
 
@@ -347,6 +289,27 @@ public class Puzzle15 extends JPanel{
 	}
     }
 
+    public static ArrayList<Integer> randomInts(){
+	ArrayList<Integer> arr = new ArrayList<Integer>();
+	for(int x = 0; x < 16; x++){
+	    arr.add(x);
+	}
+	int nullBlock = 0;
+	ArrayList<Integer> par = new ArrayList<Integer>();
+	for(int x = 0; x < 16; x++){
+		int paramIndex = (int)(Math.random() * arr.size());
+	    int param = arr.get(paramIndex);
+	    if(param == 0){
+	    	nullBlock = x;
+	    }
+	    par.add(param);
+	    arr.remove(paramIndex);
+	}	
+	par.add(nullBlock);
+	return par;
+    }	
+	
+
     public static void main(String[] args) {
 	JFrame game = new JFrame();
 	game.setTitle("15 Puzzle");
@@ -354,7 +317,8 @@ public class Puzzle15 extends JPanel{
 	game.setSize(340, 400);
 	game.setResizable(false);
 
-	game.add(new Puzzle15(2,1,2,3,4,5,6,7,8,9,10,11,12,13,14,0,15,14));
+	ArrayList<Integer> par = randomInts();
+	game.add(new Puzzle15(par.get(0),par.get(1),par.get(2),par.get(3),par.get(4),par.get(5),par.get(6),par.get(7),par.get(8),par.get(9),par.get(10),par.get(11),par.get(12),par.get(13),par.get(14),par.get(15),par.get(16)));
 
 	game.setLocationRelativeTo(null);
 	game.setVisible(true);
