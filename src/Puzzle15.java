@@ -41,7 +41,11 @@ public class Puzzle15 extends JPanel{
     private static final int TILES_MARGIN = 16;
     private static final int TIME = 300;
     private static final int MOVES = 300;
-    private static final int gameMode = (int) (Math.random() * 2) + 1; //gameMode 1 is timed. gameMode 2 is not
+    private static int gameMode =  1; // (int) (Math.random() * 2) + 1; 
+    		//gameMode 1 is timed. gameMode 2 is not
+    private static int type = 1;
+    		// 1 is solve/un/solve and 2 is un/solve/un
+    private static int trial = -1;
     
     private Tile[] myTiles;
     private int nullTileIndex;
@@ -50,14 +54,13 @@ public class Puzzle15 extends JPanel{
     private int myMoves = TIME;
     private int myTime = MOVES;
 
-    public Puzzle15(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
+    public Puzzle15(ArrayList<Integer> par){
 	setFocusable(true);
 	addKeyListener(new KeyAdapter() {
 		@Override
 		public void keyPressed(KeyEvent e) {
 		    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-		    ArrayList<Integer> par = randomInts();
-		    resetGame(par.get(0),par.get(1),par.get(2),par.get(3),par.get(4),par.get(5),par.get(6),par.get(7),par.get(8),par.get(9),par.get(10),par.get(11),par.get(12),par.get(13),par.get(14),par.get(15),par.get(16));
+		    resetGame(nextTrial());
 		    }
 		    
 		    if (!myWin && !myLose) {
@@ -95,17 +98,17 @@ public class Puzzle15 extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					if((!myWin && !myLose) && myTime > 0)
 							myTime--;
-					else if(!myWin)
+					else if(!myWin && myTime > 0)
 							myLose=true;
 					repaint();
 				}
 			};
 			new Timer(1000, taskPerformer).start();
 		}
-	resetGame(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q);	
+	resetGame(par);	
     }
 
-    public void resetGame(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m , int n, int o, int p, int q){
+    public void resetGame(ArrayList<Integer> par){
 	if(gameMode == 1){
 	    myTime = TIME;
 	}else if(gameMode == 2){
@@ -114,23 +117,23 @@ public class Puzzle15 extends JPanel{
 	myWin = false;
 	myLose = false;
 	myTiles = new Tile[4 * 4];
-	myTiles[0] = new Tile(a);
-	myTiles[1] = new Tile(b);
-	myTiles[2] = new Tile(c);
-	myTiles[3] = new Tile (d);
-	myTiles[4] = new Tile (e);
-	myTiles[5] = new Tile (f);
-	myTiles[6] = new Tile (g);
-	myTiles[7] = new Tile (h);
-	myTiles[8] = new Tile (i);
-	myTiles[9] = new Tile (j);
-	myTiles[10] = new Tile (k);
-	myTiles[11] = new Tile (l);
-	myTiles[12] = new Tile (m);
-	myTiles[13] = new Tile (n);
-	myTiles[14] = new Tile (o);
-	myTiles[15] = new Tile (p);
-	nullTileIndex = q;
+	myTiles[0] = new Tile(par.get(0));
+	myTiles[1] = new Tile(par.get(1));
+	myTiles[2] = new Tile(par.get(2));
+	myTiles[3] = new Tile (par.get(3));
+	myTiles[4] = new Tile (par.get(4));
+	myTiles[5] = new Tile (par.get(5));
+	myTiles[6] = new Tile (par.get(6));
+	myTiles[7] = new Tile (par.get(7));
+	myTiles[8] = new Tile (par.get(8));
+	myTiles[9] = new Tile (par.get(9));
+	myTiles[10] = new Tile (par.get(10));
+	myTiles[11] = new Tile (par.get(11));
+	myTiles[12] = new Tile (par.get(12));
+	myTiles[13] = new Tile (par.get(13));
+	myTiles[14] = new Tile (par.get(14));
+	myTiles[15] = new Tile (par.get(15));
+	nullTileIndex = par.get(16);
 	repaint();
     }
 
@@ -248,8 +251,12 @@ public class Puzzle15 extends JPanel{
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
     if(gameMode == 1){
+    	g.drawString("Group: " + gameMode + "-"+ type, 10, 365);
+    	g.drawString("Trial: " + (trial % 3 + 1), 120, 365);		
 	 g.drawString("Time Left: " + myTime, 200, 365);
     }else if(gameMode == 2){
+    	g.drawString("Group: " + gameMode +"-"+ type, 10, 365);
+    	g.drawString("Trial: " + (trial % 3 + 1), 120, 365);
 	g.drawString("Moves Left: " + myMoves, 200, 365);
     }
    
@@ -308,6 +315,125 @@ public class Puzzle15 extends JPanel{
 	par.add(nullBlock);
 	return par;
     }	
+    
+    public static ArrayList<Integer> nextTrial(){
+    	trial++;
+    	ArrayList<Integer> arr = new ArrayList<Integer>();
+    	if(type == 1){
+    		if(trial % 3 == 0){
+    			arr.add(2);
+    			arr.add(9);
+    			arr.add(4);
+    			arr.add(14);
+    			arr.add(3);
+    			arr.add(5);
+    			arr.add(7);
+    			arr.add(8);
+    			arr.add(12);
+    			arr.add(13);
+    			arr.add(15);
+    			arr.add(11);
+    			arr.add(10);
+    			arr.add(0);
+    			arr.add(6);
+    			arr.add(1);
+    			arr.add(13);
+    		}else if(trial % 3 == 1){
+    			arr.add(7);
+    			arr.add(5);
+    			arr.add(2);
+    			arr.add(14);
+    			arr.add(8);
+    			arr.add(9);
+    			arr.add(11);
+    			arr.add(13);
+    			arr.add(0);
+    			arr.add(4);
+    			arr.add(15);
+    			arr.add(3);
+    			arr.add(6);
+    			arr.add(1);
+    			arr.add(12);
+    			arr.add(10);
+    			arr.add(8);
+    		}else if(trial % 3 == 2){
+    			arr.add(5);
+    			arr.add(12);
+    			arr.add(13);
+    			arr.add(3);
+    			arr.add(6);
+    			arr.add(7);
+    			arr.add(10);
+    			arr.add(15);
+    			arr.add(14);
+    			arr.add(0);
+    			arr.add(9);
+    			arr.add(8);
+    			arr.add(11);
+    			arr.add(2);
+    			arr.add(1);
+    			arr.add(4);
+    			arr.add(9);
+    		}
+    	}else if(type == 2){
+    		if(trial % 3 == 0){
+    			arr.add(7);
+    			arr.add(5);
+    			arr.add(2);
+    			arr.add(14);
+    			arr.add(8);
+    			arr.add(9);
+    			arr.add(11);
+    			arr.add(13);
+    			arr.add(0);
+    			arr.add(4);
+    			arr.add(15);
+    			arr.add(3);
+    			arr.add(6);
+    			arr.add(1);
+    			arr.add(12);
+    			arr.add(10);
+    			arr.add(8);
+    		}else if(trial % 3 == 1){
+    			arr.add(2);
+    			arr.add(9);
+    			arr.add(4);
+    			arr.add(14);
+    			arr.add(3);
+    			arr.add(5);
+    			arr.add(7);
+    			arr.add(8);
+    			arr.add(12);
+    			arr.add(13);
+    			arr.add(15);
+    			arr.add(11);
+    			arr.add(10);
+    			arr.add(0);
+    			arr.add(6);
+    			arr.add(1);
+    			arr.add(13);
+    		}else if(trial % 3 == 2){
+    			arr.add(9);
+    			arr.add(0);
+    			arr.add(13);
+    			arr.add(8);
+    			arr.add(1);
+    			arr.add(14);
+    			arr.add(2);
+    			arr.add(5);
+    			arr.add(10);
+    			arr.add(15);
+    			arr.add(11);
+    			arr.add(3);
+    			arr.add(12);
+    			arr.add(7);
+    			arr.add(4);
+    			arr.add(6);
+    			arr.add(1);
+    		}
+    	}
+    	return arr;
+    }
 	
 
     public static void main(String[] args) {
@@ -317,9 +443,7 @@ public class Puzzle15 extends JPanel{
 	game.setSize(340, 400);
 	game.setResizable(false);
 
-	ArrayList<Integer> par = randomInts();
-	game.add(new Puzzle15(par.get(0),par.get(1),par.get(2),par.get(3),par.get(4),par.get(5),par.get(6),par.get(7),par.get(8),par.get(9),par.get(10),par.get(11),par.get(12),par.get(13),par.get(14),par.get(15),par.get(16)));
-
+	game.add(new Puzzle15(nextTrial()));
 	game.setLocationRelativeTo(null);
 	game.setVisible(true);
     }
