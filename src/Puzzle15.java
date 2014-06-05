@@ -34,8 +34,8 @@ public class Puzzle15 extends JPanel{
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private static final Color BG_COLOR = new Color(0xbbada0);
+    private static final long serialVersionUID = 1L;
+    private static final Color BG_COLOR = new Color(0xbbada0);
     private static final String FONT_NAME = "Arial";
     private static final int TILE_SIZE = 64;
     private static final int TILES_MARGIN = 16;
@@ -43,16 +43,16 @@ public class Puzzle15 extends JPanel{
     private static final int MOVES = 300;
     private static int gameMode =  1; // (int) (Math.random() * 2) + 1; 
     		//gameMode 1 is timed. gameMode 2 is not
-    private static int type = 1;
+    private static int type = (int) (Math.random() * 2) + 1; 
     		// 1 is solve/un/solve and 2 is un/solve/un
-    private static int trial = -1;
+    private static int trial = -2;
     
     private Tile[] myTiles;
     private int nullTileIndex;
     private boolean myWin = false;
     private boolean myLose = false;
-    private int myMoves = TIME;
-    private int myTime = MOVES;
+    private int myMoves = MOVES;
+    private int myTime = TIME;
 
     public Puzzle15(ArrayList<Integer> par){
 	setFocusable(true);
@@ -98,7 +98,7 @@ public class Puzzle15 extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					if((!myWin && !myLose) && myTime > 0)
 							myTime--;
-					else if(!myWin && myTime > 0)
+					else if(!myWin && myTime < 1)
 							myLose=true;
 					repaint();
 				}
@@ -151,7 +151,8 @@ public class Puzzle15 extends JPanel{
 	    myTiles[nullTileIndex] = myTiles[nullTileIndex + 1];
 	    myTiles[nullTileIndex + 1] = temp;
 	    nullTileIndex++;
-	    myMoves--;
+	    if(gameMode == 2)
+		myMoves--;
 	}
 	
     }
@@ -162,7 +163,8 @@ public class Puzzle15 extends JPanel{
 	  myTiles[nullTileIndex] = myTiles[nullTileIndex - 1];
 	  myTiles[nullTileIndex - 1] = temp;
 	  nullTileIndex--;
-	  myMoves--;
+	  if(gameMode == 2)
+	      myMoves--;
 	}
       
 
@@ -174,7 +176,8 @@ public class Puzzle15 extends JPanel{
 	  myTiles[nullTileIndex] = myTiles[nullTileIndex - 4];
 	  myTiles[nullTileIndex - 4] = temp;
 	  nullTileIndex -= 4;
-	  myMoves--;
+	  if(gameMode == 2)
+	      myMoves--;
       }
       
 
@@ -186,7 +189,8 @@ public class Puzzle15 extends JPanel{
 	  myTiles[nullTileIndex] = myTiles[nullTileIndex + 4];
 	  myTiles[nullTileIndex + 4] = temp;
 	  nullTileIndex+= 4;
-	  myMoves--;
+	  if(gameMode == 2)
+	      myMoves--;
       }
 
   }
@@ -232,8 +236,10 @@ public class Puzzle15 extends JPanel{
       g.fillRect(0, 0, getWidth(), getHeight());
       g.setColor(new Color(78, 139, 202));
       g.setFont(new Font(FONT_NAME, Font.BOLD, 32));
-      if (myWin) {
-        g.drawString("Task Success!", 68, 150);
+      if (myWin && trial == 2) {
+	  g.drawString("End of test.", 68, 150);
+      }else if(myWin){
+	   g.drawString("Task Success!", 68, 150);
       }
       if (myLose) {
 	  if(gameMode == 1){
@@ -243,19 +249,23 @@ public class Puzzle15 extends JPanel{
 	  }
         g.drawString("Task Failure!", 64, 200);
       }
-      if (myWin || myLose) {
+      if ((myWin || myLose) && trial == 2) {
         g.setFont(new Font(FONT_NAME, Font.BOLD, 18));
         g.setColor(new Color(128, 128, 128, 128));
-        g.drawString("Press ESC to play again", 80, getHeight() - 35);
+        g.drawString("Press exit the program.", 80, getHeight() - 35);
+      }else if(myWin || myLose){
+	  g.setFont(new Font(FONT_NAME, Font.BOLD, 18));
+	  g.setColor(new Color(128, 128, 128, 128));
+	  g.drawString("Press ESC to proceed", 80, getHeight() - 35);
       }
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
     if(gameMode == 1){
-    	g.drawString("Group: " + gameMode + "-"+ type, 10, 365);
+    	g.drawString("Group: " + type, 10, 365);
     	g.drawString("Trial: " + (trial % 3 + 1), 120, 365);		
 	 g.drawString("Time Left: " + myTime, 200, 365);
     }else if(gameMode == 2){
-    	g.drawString("Group: " + gameMode +"-"+ type, 10, 365);
+    	g.drawString("Group: " + type, 10, 365);
     	g.drawString("Trial: " + (trial % 3 + 1), 120, 365);
 	g.drawString("Moves Left: " + myMoves, 200, 365);
     }
@@ -320,117 +330,154 @@ public class Puzzle15 extends JPanel{
     	trial++;
     	ArrayList<Integer> arr = new ArrayList<Integer>();
     	if(type == 1){
-    		if(trial % 3 == 0){
-    			arr.add(2);
-    			arr.add(9);
-    			arr.add(4);
-    			arr.add(14);
-    			arr.add(3);
-    			arr.add(5);
-    			arr.add(7);
-    			arr.add(8);
-    			arr.add(12);
-    			arr.add(13);
-    			arr.add(15);
-    			arr.add(11);
-    			arr.add(10);
-    			arr.add(0);
-    			arr.add(6);
-    			arr.add(1);
-    			arr.add(13);
-    		}else if(trial % 3 == 1){
-    			arr.add(7);
-    			arr.add(5);
-    			arr.add(2);
-    			arr.add(14);
-    			arr.add(8);
-    			arr.add(9);
-    			arr.add(11);
-    			arr.add(13);
-    			arr.add(0);
-    			arr.add(4);
-    			arr.add(15);
-    			arr.add(3);
-    			arr.add(6);
-    			arr.add(1);
-    			arr.add(12);
-    			arr.add(10);
-    			arr.add(8);
-    		}else if(trial % 3 == 2){
-    			arr.add(5);
-    			arr.add(12);
-    			arr.add(13);
-    			arr.add(3);
-    			arr.add(6);
-    			arr.add(7);
-    			arr.add(10);
-    			arr.add(15);
-    			arr.add(14);
-    			arr.add(0);
-    			arr.add(9);
-    			arr.add(8);
-    			arr.add(11);
-    			arr.add(2);
-    			arr.add(1);
-    			arr.add(4);
-    			arr.add(9);
-    		}
+	    if (trial == -1){
+		arr.add(3);
+		arr.add(5);
+		arr.add(4);
+		arr.add(8);
+		arr.add(1);
+		arr.add(2);
+		arr.add(12);
+		arr.add(6);
+		arr.add(9);
+		arr.add(11);
+		arr.add(0);
+		arr.add(7);
+		arr.add(13);
+		arr.add(10);
+		arr.add(15);
+		arr.add(14);
+		arr.add(10);
+	   
+	    }else if(trial % 3 == 0){
+		arr.add(2);
+		arr.add(9);
+		arr.add(4);
+		arr.add(14);
+		arr.add(3);
+		arr.add(5);
+		arr.add(7);
+		arr.add(8);
+		arr.add(12);
+		arr.add(13);
+		arr.add(15);
+		arr.add(11);
+		arr.add(10);
+		arr.add(0);
+		arr.add(6);
+		arr.add(1);
+		arr.add(13);
+	    }else if(trial % 3 == 1){
+		arr.add(7);
+		arr.add(5);
+		arr.add(2);
+		arr.add(14);
+		arr.add(8);
+		arr.add(9);
+		arr.add(11);
+		arr.add(13);
+		arr.add(0);
+		arr.add(4);
+		arr.add(15);
+		arr.add(3);
+		arr.add(6);
+		arr.add(1);
+		arr.add(12);
+		arr.add(10);
+		arr.add(8);
+	    }else if(trial % 3 == 2){
+		arr.add(5);
+		arr.add(12);
+		arr.add(13);
+		arr.add(3);
+		arr.add(6);
+		arr.add(7);
+		arr.add(10);
+		arr.add(15);
+		arr.add(14);
+		arr.add(0);
+		arr.add(9);
+		arr.add(8);
+		arr.add(11);
+		arr.add(2);
+		arr.add(1);
+		arr.add(4);
+		arr.add(9);
+	    }
     	}else if(type == 2){
-    		if(trial % 3 == 0){
-    			arr.add(7);
-    			arr.add(5);
-    			arr.add(2);
-    			arr.add(14);
-    			arr.add(8);
-    			arr.add(9);
-    			arr.add(11);
-    			arr.add(13);
-    			arr.add(0);
-    			arr.add(4);
-    			arr.add(15);
-    			arr.add(3);
-    			arr.add(6);
-    			arr.add(1);
-    			arr.add(12);
-    			arr.add(10);
-    			arr.add(8);
-    		}else if(trial % 3 == 1){
-    			arr.add(2);
-    			arr.add(9);
-    			arr.add(4);
-    			arr.add(14);
-    			arr.add(3);
-    			arr.add(5);
-    			arr.add(7);
-    			arr.add(8);
-    			arr.add(12);
-    			arr.add(13);
-    			arr.add(15);
-    			arr.add(11);
-    			arr.add(10);
-    			arr.add(0);
-    			arr.add(6);
-    			arr.add(1);
-    			arr.add(13);
-    		}else if(trial % 3 == 2){
-    			arr.add(9);
-    			arr.add(0);
-    			arr.add(13);
-    			arr.add(8);
-    			arr.add(1);
-    			arr.add(14);
-    			arr.add(2);
-    			arr.add(5);
-    			arr.add(10);
-    			arr.add(15);
-    			arr.add(11);
-    			arr.add(3);
-    			arr.add(12);
-    			arr.add(7);
-    			arr.add(4);
-    			arr.add(6);
-    			arr.add(1);
-    		}
+	    if(trial == -1){
+        	arr.add(3);
+		arr.add(5);
+		arr.add(4);
+		arr.add(8);
+		arr.add(1);
+		arr.add(2);
+		arr.add(12);
+		arr.add(6);
+		arr.add(9);
+		arr.add(11);
+		arr.add(0);
+		arr.add(7);
+		arr.add(13);
+		arr.add(10);
+		arr.add(15);
+		arr.add(14);
+		arr.add(10);
+	    }else if(trial % 3 == 0){
+		arr.add(7);
+		arr.add(5);
+		arr.add(2);
+		arr.add(14);
+		arr.add(8);
+		arr.add(9);
+		arr.add(11);
+		arr.add(13);
+		arr.add(0);
+		arr.add(4);
+		arr.add(15);
+		arr.add(3);
+		arr.add(6);
+		arr.add(1);
+		arr.add(12);
+		arr.add(10);
+		arr.add(8);
+	    }else if(trial % 3 == 1){
+		arr.add(2);
+		arr.add(9);
+		arr.add(4);
+		arr.add(14);
+		arr.add(3);
+		arr.add(5);
+		arr.add(7);
+		arr.add(8);
+		arr.add(12);
+		arr.add(13);
+		arr.add(15);
+		arr.add(11);
+		arr.add(10);
+		arr.add(0);
+		arr.add(6);
+		arr.add(1);
+		arr.add(13);
+	    }else if(trial % 3 == 2){
+		arr.add(9);
+		arr.add(0);
+		arr.add(13);
+		arr.add(8);
+		arr.add(1);
+		arr.add(14);
+		arr.add(2);
+		arr.add(5);
+		arr.add(10);
+		arr.add(15);
+		arr.add(11);
+		arr.add(3);
+		arr.add(12);
+		arr.add(7);
+		arr.add(4);
+		arr.add(6);
+		arr.add(1);
+	    }
     	}
     	return arr;
     }
